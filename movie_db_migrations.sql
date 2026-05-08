@@ -1,55 +1,79 @@
--- Table 1: Person
+-- =====================================================
+-- 1.TABLE: Person
+-- =====================================================
 CREATE TABLE Person(
     person_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
+    name_en VARCHAR(500),
     birth_date DATE,
     death_date DATE
 );
 
--- Table 2: Role
+-- =====================================================
+-- 2.TABLE: Role
+-- =====================================================
 CREATE TABLE Role(
     role_id BIGSERIAL PRIMARY KEY,
     role_name VARCHAR(100) NOT NULL UNIQUE
 );
 
--- Table 3: Title
+-- =====================================================
+-- 3.TABLE: Titile
+-- =====================================================
 CREATE TABLE Title (
     title_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(500) NOT NULL,
+    name_en VARCHAR(500),
     status VARCHAR(20) CHECK (status IN ('Released', 'Ongoing', 'Announced')),
     duration INTERVAL HOUR TO SECOND,
     release_date DATE,
-    age_rating VARCHAR(5) CHECK (age_rating IN ('G', 'PG', 'PG-13', 'R', 'NC-17', 'NR')),
+    age_rating VARCHAR(5) CHECK (age_rating IN (
+        -- MPAA movie ratings
+        'G', 'PG', 'PG-13', 'R', 'NC-17', 'NR',
+        -- TV ratings
+        'TV-Y', 'TV-Y7', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA'
+        )
+    ),
     summary TEXT,
     vote_count INTEGER DEFAULT 0,
-    score DECIMAL(3,2) CHECK (score IS NULL OR (score >= 1 AND score <= 10))
+    score DECIMAL(3,2) CHECK (score IS NULL OR (score >= 1 AND score <= 10)) DEFAULT NULL
 );
 
--- Table 4: Genre
+-- =====================================================
+-- 4.TABLE: Genre
+-- =====================================================
 CREATE TABLE Genre (
     genre_id BIGSERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL UNIQUE,
+    name_en VARCHAR(100) NOT NULL UNIQUE,
     description TEXT
 );
 
--- Table 5: Has Genre
+-- =====================================================
+-- 5.TABLE: HasGenre
+-- =====================================================
 CREATE TABLE Has_Genre (
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
     genre_id BIGINT NOT NULL REFERENCES Genre(genre_id) ON DELETE CASCADE,
     PRIMARY KEY (title_id, genre_id)
 );
 
--- Table 6: Cast_Member
+-- =====================================================
+-- 6.TABLE: Cast_Member
+-- =====================================================
 CREATE TABLE Cast_Member (
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
     person_id BIGINT NOT NULL REFERENCES Person(person_id) ON DELETE CASCADE,
     role_id BIGINT NOT NULL REFERENCES Role(role_id) ON DELETE CASCADE,
     char_name VARCHAR(255) NOT NULL,
+    char_name_en VARCHAR(255),
     ordering INTEGER,
     PRIMARY KEY (title_id, person_id, role_id, char_name)
 );
 
--- Table 7: Crew_Member
+-- =====================================================
+-- 7.TABLE: Crew_Member
+-- =====================================================
 CREATE TABLE Crew_Member (
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
     person_id BIGINT NOT NULL REFERENCES Person(person_id) ON DELETE CASCADE,
@@ -58,7 +82,9 @@ CREATE TABLE Crew_Member (
     PRIMARY KEY (title_id, person_id, role_id)
 );
 
--- Table 8: Users
+-- =====================================================
+-- 8.TABLE: Users
+-- =====================================================
 CREATE TABLE Users (
     user_id BIGSERIAL PRIMARY KEY,
     username VARCHAR(100) NOT NULL UNIQUE,
@@ -67,7 +93,9 @@ CREATE TABLE Users (
     join_date DATE DEFAULT CURRENT_DATE
 );
 
--- Table 9: Series
+-- =====================================================
+-- 9.TABLE: Series
+-- =====================================================
 CREATE TABLE Series (
     title_id BIGINT PRIMARY KEY REFERENCES Title(title_id) ON DELETE CASCADE,
     total_episodes INTEGER DEFAULT 0,
@@ -75,7 +103,9 @@ CREATE TABLE Series (
     end_year INTEGER
 );
 
--- Table 10: Season
+-- =====================================================
+-- 10.TABLE: Season
+-- =====================================================
 CREATE TABLE Season (
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
     season_number INTEGER NOT NULL CHECK (season_number >= 1),
@@ -84,13 +114,16 @@ CREATE TABLE Season (
     PRIMARY KEY (title_id, season_number)
 );
 
--- Table 11: Episode
+-- =====================================================
+-- 11.TABLE: Episode
+-- =====================================================
 CREATE TABLE Episode (
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
     season_number INTEGER NOT NULL,
     episode_number INTEGER NOT NULL CHECK (episode_number >= 1),
     episode_name VARCHAR(500),
-    score DECIMAL(3,2) CHECK (score IS NULL OR (score >= 1 AND score <= 10)),
+    episode_name_en VARCHAR(500),
+    score DECIMAL(3,2) CHECK (score IS NULL OR (score >= 1 AND score <= 10)) DEFAULT NULL,
     vote_count INTEGER DEFAULT 0 CHECK (vote_count >= 0),
     aired_date DATE,
     duration INTERVAL HOUR TO SECOND,
@@ -99,10 +132,12 @@ CREATE TABLE Episode (
     FOREIGN KEY (title_id, season_number) REFERENCES Season(title_id, season_number) ON DELETE CASCADE
 );
 
--- Table 12: Review (partitioned)
+-- =====================================================
+-- 12.TABLE: Review
+-- =====================================================
 CREATE TABLE Review (
     review_id BIGSERIAL,
-    score INTEGER CHECK (score IS NULL OR (score >= 1 AND score <= 10)),
+    score INTEGER CHECK (score IS NULL OR (score >= 1 AND score <= 10)) DEFAULT NULL,
     comment TEXT,
     date DATE DEFAULT CURRENT_DATE,
     is_spoiler BOOLEAN DEFAULT FALSE,
@@ -123,7 +158,14 @@ CREATE TABLE Review (
 CREATE TABLE Review_T PARTITION OF Review FOR VALUES IN ('T');
 CREATE TABLE Review_E PARTITION OF Review FOR VALUES IN ('E');
 
--- Table 13: Saved
+ALTER TABLE Review_E ADD CONSTRAINT review_e_episode_fk 
+    FOREIGN KEY (title_id, season_number, episode_number) 
+    REFERENCES Episode(title_id, season_number, episode_number) ON DELETE CASCADE;
+
+
+-- =====================================================
+-- 13.TABLE: Saved
+-- =====================================================
 CREATE TABLE Saved (
     user_id BIGINT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
@@ -132,7 +174,9 @@ CREATE TABLE Saved (
     PRIMARY KEY (user_id, title_id)
 );
 
--- Table 14: Recommended
+-- =====================================================
+-- 14.TABLE: Recommended
+-- =====================================================
 CREATE TABLE Recommended (
     user_id BIGINT NOT NULL REFERENCES Users(user_id) ON DELETE CASCADE,
     title_id BIGINT NOT NULL REFERENCES Title(title_id) ON DELETE CASCADE,
@@ -141,7 +185,9 @@ CREATE TABLE Recommended (
     PRIMARY KEY (user_id, title_id)
 );
 
--- Table 15: Award (partitioned)
+-- =====================================================
+-- 15.TABLE: Award
+-- =====================================================
 CREATE TABLE Award (
     award_id BIGSERIAL,
     name VARCHAR(255) NOT NULL,
@@ -157,72 +203,24 @@ CREATE TABLE Award (
         (type = 'T' AND person_id IS NULL AND role_id IS NULL AND char_name IS NULL) OR
         (type = 'C' AND person_id IS NOT NULL AND role_id IS NOT NULL AND char_name IS NOT NULL) OR
         (type = 'W' AND person_id IS NOT NULL AND role_id IS NOT NULL AND char_name IS NULL)
-    ),
-    FOREIGN KEY (title_id, person_id, role_id, char_name) 
-        REFERENCES Cast_Member(title_id, person_id, role_id, char_name) ON DELETE CASCADE,
-    FOREIGN KEY (title_id, person_id, role_id) 
-        REFERENCES Crew_Member(title_id, person_id, role_id) ON DELETE CASCADE
+    )
 ) PARTITION BY LIST (type);
 
 CREATE TABLE Award_T PARTITION OF Award FOR VALUES IN ('T');
 CREATE TABLE Award_C PARTITION OF Award FOR VALUES IN ('C');
 CREATE TABLE Award_W PARTITION OF Award FOR VALUES IN ('W');
 
--- Add column english_name
-ALTER TABLE Title ADD COLUMN name_en VARCHAR(500);
-ALTER TABLE Episode ADD COLUMN episode_name_en VARCHAR(500);
-ALTER TABLE Person ADD COLUMN name_en VARCHAR(500);
-ALTER TABLE Cast_Member ADD COLUMN char_name_en VARCHAR(255);
-
--- Title table
-ALTER TABLE Title ALTER COLUMN score SET DEFAULT NULL;
-
--- Episode table
-ALTER TABLE Episode ALTER COLUMN score SET DEFAULT NULL;
-
--- Review table
-ALTER TABLE Review ALTER COLUMN score SET DEFAULT NULL;
-
--- Drop the existing constraint
-ALTER TABLE Title DROP CONSTRAINT title_age_rating_check;
-
--- Add new constraint with both MPAA and TV ratings
-ALTER TABLE Title ADD CONSTRAINT title_age_rating_check CHECK (
-    age_rating IN (
-        -- MPAA movie ratings
-        'G', 'PG', 'PG-13', 'R', 'NC-17', 'NR',
-        -- TV ratings
-        'TV-Y', 'TV-Y7', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA'
-    )
-);
-
-
--- Step 1: Drop foreign keys from parent table
-ALTER TABLE Award DROP CONSTRAINT award_title_id_person_id_role_id_char_name_fkey;
-ALTER TABLE Award DROP CONSTRAINT award_title_id_person_id_role_id_fkey;
-
--- Step 2: Add foreign key to Cast_Member ONLY on Award_C partition
 ALTER TABLE Award_C ADD CONSTRAINT award_c_cast_fk 
     FOREIGN KEY (title_id, person_id, role_id, char_name) 
     REFERENCES Cast_Member(title_id, person_id, role_id, char_name) ON DELETE CASCADE;
 
--- Step 3: Add foreign key to Crew_Member ONLY on Award_W partition
 ALTER TABLE Award_W ADD CONSTRAINT award_w_crew_fk 
     FOREIGN KEY (title_id, person_id, role_id) 
     REFERENCES Crew_Member(title_id, person_id, role_id) ON DELETE CASCADE;
 
-
--- Step 1: Drop foreign keys from parent Review table
-ALTER TABLE Review DROP CONSTRAINT review_title_id_season_number_episode_number_fkey;
-
--- Step 2: Add episode foreign key ONLY to Review_E partition
-ALTER TABLE Review_E ADD CONSTRAINT review_e_episode_fk 
-    FOREIGN KEY (title_id, season_number, episode_number) 
-    REFERENCES Episode(title_id, season_number, episode_number) ON DELETE CASCADE;
-
-
+-- TRIGGERS
 -- =====================================================
--- 1. Update Series.total_episodes and total_seasons
+--  Update Series.total_episodes and total_seasons
 -- =====================================================
 CREATE OR REPLACE FUNCTION update_series_counts()
 RETURNS TRIGGER AS $$
@@ -249,7 +247,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_series_counts();
 
 -- =====================================================
--- 2. Update Title.vote_count and average score (fixed for DECIMAL(3,2))
+--  Update Title.vote_count and average score (fixed for DECIMAL(3,2))
 -- =====================================================
 CREATE OR REPLACE FUNCTION update_title_review_stats()
 RETURNS TRIGGER AS $$
@@ -285,7 +283,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_title_review_stats();
 
 -- =====================================================
--- 3. Update Episode.vote_count and average score (fixed for DECIMAL(3,2))
+-- Update Episode.vote_count and average score (fixed for DECIMAL(3,2))
 -- =====================================================
 CREATE OR REPLACE FUNCTION update_episode_review_stats()
 RETURNS TRIGGER AS $$
@@ -335,7 +333,7 @@ FOR EACH ROW
 EXECUTE FUNCTION update_episode_review_stats();
 
 -- =====================================================
--- 4. Update Season.episodes_count
+-- Update Season.episodes_count
 -- =====================================================
 CREATE OR REPLACE FUNCTION update_season_episode_count()
 RETURNS TRIGGER AS $$

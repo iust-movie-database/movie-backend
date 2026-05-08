@@ -1661,7 +1661,7 @@ INSERT INTO Award (name, category, ceremony_date, type, title_id, person_id, rol
     (SELECT role_id FROM Role WHERE role_name = 'Showrunner'),
     NULL);
 
-    INSERT INTO Users (username, email, password_hash, join_date) VALUES
+INSERT INTO Users (username, email, password_hash, join_date) VALUES
 ('آریا_استارک', 'arya.stark@example.com', 'hash_arya123', '2023-01-15'),
 ('جان_اسنو', 'jon.snow@example.com', 'hash_jon456', '2023-02-20'),
 ('والتر_وایت', 'walter.white@example.com', 'hash_walter789', '2023-03-10'),
@@ -1680,9 +1680,6 @@ INSERT INTO Users (username, email, password_hash, join_date) VALUES
 ('pedro_pascal_fan', 'pedro@example.com', 'hash_pedro123', '2024-01-15'),
 ('rockstar_crowe', 'russell@example.com', 'hash_russell456', '2024-02-10'),
 ('cillian_murphy', 'cillian@example.com', 'hash_cillian789', '2024-03-05');
-
--- First, add English name column to Genre table
-ALTER TABLE Genre ADD COLUMN name_en VARCHAR(100);
 
 -- Insert Genres with Persian and English names
 INSERT INTO Genre (name, name_en, description) VALUES
