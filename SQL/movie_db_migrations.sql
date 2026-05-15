@@ -36,7 +36,8 @@ CREATE TABLE Title (
     ),
     summary TEXT,
     vote_count INTEGER DEFAULT 0,
-    score DECIMAL(3,2) CHECK (score IS NULL OR (score >= 1 AND score <= 10)) DEFAULT NULL
+    score DECIMAL(3,2) CHECK (score IS NULL OR (score >= 1 AND score <= 10)) DEFAULT NULL,
+    ttype CHAR(1) CHECK(ttype IN ('M', 'S'))
 );
 
 -- =====================================================
