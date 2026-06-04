@@ -1,0 +1,6 @@
+CREATE TABLE Genre (
+    genre_id BIGSERIAL PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    name_en VARCHAR(100) NOT NULL UNIQUE,
+    description TEXT
+);

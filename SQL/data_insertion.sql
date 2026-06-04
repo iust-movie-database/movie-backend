@@ -1440,7 +1440,7 @@ INSERT INTO Award (name, category, ceremony_date, type, title_id, person_id, rol
 ('اسکار', 'بهترین فیلمنامه غیراقتباسی', '1995-03-27', 'T', 3, NULL, NULL, NULL),
 ('نخل طلا', 'بهترین فیلم', '1994-05-23', 'T', 3, NULL, NULL, NULL),
 
--- Forrest Gump Awards
+-- Forrest Gump 
 ('اسکار', 'بهترین فیلم', '1995-03-27', 'T', 4, NULL, NULL, NULL),
 ('اسکار', 'بهترین بازیگر مرد', '1995-03-27', 'T', 4, NULL, NULL, NULL),
 ('اسکار', 'بهترین کارگردان', '1995-03-27', 'T', 4, NULL, NULL, NULL),

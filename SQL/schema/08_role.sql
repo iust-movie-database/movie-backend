@@ -1,0 +1,5 @@
+CREATE TABLE role(
+    role_id BIGSERIAL PRIMARY KEY,
+    name_fa VARCHAR(150) NOT NULL UNIQUE,
+    name_en VARCHAR(150) NOT NULL UNIQUE
+);
