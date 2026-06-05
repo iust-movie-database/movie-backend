@@ -1,4 +1,7 @@
-CREATE OR REPLACE FUNCTION get_recommendations(p_user_id BIGINT, p_limit INT DEFAULT 5)
+CREATE OR REPLACE FUNCTION get_recommendations(
+    p_user_id BIGINT DEFAULT NULL,
+    p_limit INT DEFAULT 5
+)
 RETURNS TABLE (
     title_id BIGINT,
     t_type CHAR(1),
@@ -14,7 +17,8 @@ RETURNS TABLE (
     -- Series fields
     total_seasons INT,
     total_episodes INT,
-    end_year INT
+    end_year INT,
+    is_saved BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -23,7 +27,12 @@ BEGIN
                STRING_AGG(g.name_fa, ', ') as genres,
                EXTRACT(YEAR FROM t.release_date)::INT as release_year,
                t.duration_mins,
-               s.total_seasons, s.total_episodes, EXTRACT(YEAR FROM s.end_date)::INT
+               s.total_seasons, s.total_episodes, EXTRACT(YEAR FROM s.end_date)::INT,
+               CASE WHEN p_user_id IS NOT NULL AND EXISTS(
+                    SELECT 1 FROM saved sv
+                    WHERE sv.user_id = p_user_id AND
+                          sv.title_id = t.title_id
+               ) THEN TRUE ELSE FALSE END AS is_saved
         FROM recommended r
         JOIN title t USING(title_id)
         LEFT JOIN series s ON t.title_id = s.title_id

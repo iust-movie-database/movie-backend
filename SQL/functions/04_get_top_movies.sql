@@ -1,4 +1,7 @@
-CREATE OR REPLACE FUNCTION get_top_movies(p_limit INT DEFAULT 5)
+CREATE OR REPLACE FUNCTION get_top_movies(
+    p_user_id BIGINT DEFAULT NULL,
+    p_limit INT DEFAULT 5
+)
 RETURNS TABLE (
     title_id BIGINT,
     t_type CHAR(1),
@@ -9,7 +12,8 @@ RETURNS TABLE (
     poster_url VARCHAR,
     genres VARCHAR,
     release_year INT,
-    duration_mins INT
+    duration_mins INT,
+    is_saved BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -17,7 +21,12 @@ BEGIN
                t.name_fa, t.name_en, t.poster_url,
                STRING_AGG(g.name_fa, ', ') AS genres,
                EXTRACT(YEAR FROM t.release_date) AS release_year,
-               t.duration_mins
+               t.duration_mins,
+               CASE WHEN p_user_id IS NOT NULL AND EXISTS(
+                    SELECT 1 FROM saved sv
+                    WHERE sv.user_id = p_user_id AND
+                          sv.title_id = t.title_id
+               ) THEN TRUE ELSE FALSE END AS is_saved
         FROM title t
         LEFT JOIN has_genre hg USING(title_id)
         LEFT JOIN genre g USING(genre_id)

@@ -1,4 +1,7 @@
-CREATE OR REPLACE FUNCTION get_top_series(p_limit INT DEFAULT 5)
+CREATE OR REPLACE FUNCTION get_top_series(
+	p_user_id BIGINT DEFAULT NULL,
+	p_limit INT DEFAULT 5
+)
 RETURNS TABLE (
     title_id BIGINT,
     t_type CHAR(1),
@@ -10,7 +13,8 @@ RETURNS TABLE (
     genres VARCHAR,
     release_year INT,
     end_year INT,
-    total_episodes INT 
+    total_episodes INT,
+	is_saved BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -19,7 +23,12 @@ BEGIN
                STRING_AGG(g.name_fa, ', ') AS genres,
                EXTRACT(YEAR FROM t.release_date) AS release_year,
                EXTRACT(YEAR FROM s.end_date) AS end_year,
-               s.total_episodes
+               s.total_episodes,
+			   CASE WHEN p_user_id IS NOT NULL AND EXISTS(
+					SELECT 1 FROM saved sv
+					WHERE sv.user_id = p_user_id AND
+						  sv.title_id = t.title_id
+			   ) THEN TRUE ELSE FALSE END AS is_saved
         FROM title t
         JOIN series s USING(title_id)
         LEFT JOIN has_genre hg USING(title_id)

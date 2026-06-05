@@ -1,4 +1,7 @@
-CREATE OR REPLACE FUNCTION get_coming_soon(p_limit INT DEFAULT 5)
+CREATE OR REPLACE FUNCTION get_coming_soon(
+    p_user_id BIGINT DEFAULT NULL,
+    p_limit INT DEFAULT 5
+)
 RETURNS TABLE (
     title_id BIGINT,
     t_type CHAR(1),
@@ -8,11 +11,10 @@ RETURNS TABLE (
     poster_url VARCHAR,
     genres VARCHAR,
     release_year INT,
-    -- Movie fields
     duration_mins INT,
-    -- Series fields
     total_seasons INT,
-    total_episodes INT
+    total_episodes INT,
+    is_saved BOOLEAN
 ) AS $$
 BEGIN
     RETURN QUERY
@@ -21,7 +23,11 @@ BEGIN
                STRING_AGG(g.name_fa, ', ') AS genres,
                EXTRACT(YEAR FROM t.release_date)::INT AS release_year,
                t.duration_mins,
-               s.total_seasons, s.total_episodes
+               s.total_seasons, s.total_episodes,
+               CASE WHEN p_user_id IS NOT NULL AND EXISTS (
+                   SELECT 1 FROM saved sv 
+                   WHERE sv.user_id = p_user_id AND sv.title_id = t.title_id
+               ) THEN TRUE ELSE FALSE END as is_saved
         FROM title t
         LEFT JOIN series s ON t.title_id = s.title_id
         LEFT JOIN has_genre hg USING(title_id)
