@@ -1,0 +1,34 @@
+CREATE OR REPLACE FUNCTION get_top_series(p_limit INT DEFAULT 5)
+RETURNS TABLE (
+    title_id BIGINT,
+    t_type CHAR(1),
+    score DECIMAL,
+    age_rating VARCHAR,
+    name_fa VARCHAR,
+    name_en VARCHAR,
+    poster_url VARCHAR,
+    genres VARCHAR,
+    release_year INT,
+    end_year INT,
+    total_episodes INT 
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT t.title_id, t.t_type, t.score, t.age_rating,
+               t.name_fa, t.name_en, t.poster_url,
+               STRING_AGG(g.name_fa, ', ') AS genres,
+               EXTRACT(YEAR FROM t.release_date) AS release_year,
+               EXTRACT(YEAR FROM s.end_date) AS end_year,
+               s.total_episodes
+        FROM title t
+        JOIN series s USING(title_id)
+        LEFT JOIN has_genre hg USING(title_id)
+        LEFT JOIN genre g USING(genre_id)
+        WHERE t.vote_count > 1000 
+          AND t.t_type = 'S'
+          AND t.score IS NOT NULL
+        GROUP BY t.title_id
+        ORDER BY t.score DESC, t.vote_count DESC
+        LIMIT p_limit;
+END;
+$$ LANGUAGE plpgsql;

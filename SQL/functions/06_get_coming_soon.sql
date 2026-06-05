@@ -1,0 +1,34 @@
+CREATE OR REPLACE FUNCTION get_coming_soon(p_limit INT DEFAULT 5)
+RETURNS TABLE (
+    title_id BIGINT,
+    t_type CHAR(1),
+    age_rating VARCHAR,
+    name_fa VARCHAR,
+    name_en VARCHAR,
+    poster_url VARCHAR,
+    genres VARCHAR,
+    release_year INT,
+    -- Movie fields
+    duration_mins INT,
+    -- Series fields
+    total_seasons INT,
+    total_episodes INT
+) AS $$
+BEGIN
+    RETURN QUERY
+        SELECT t.title_id, t.t_type, t.age_rating,
+               t.name_fa, t.name_en, t.poster_url,
+               STRING_AGG(g.name_fa, ', ') AS genres,
+               EXTRACT(YEAR FROM t.release_date)::INT AS release_year,
+               t.duration_mins,
+               s.total_seasons, s.total_episodes
+        FROM title t
+        LEFT JOIN series s ON t.title_id = s.title_id
+        LEFT JOIN has_genre hg USING(title_id)
+        LEFT JOIN genre g USING(genre_id)
+        WHERE t.release_date >= CURRENT_DATE
+        GROUP BY t.title_id, s.total_seasons, s.total_episodes
+        ORDER BY t.release_date ASC
+        LIMIT p_limit;
+END;
+$$ LANGUAGE plpgsql;

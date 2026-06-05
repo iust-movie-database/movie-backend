@@ -4,6 +4,7 @@ CREATE TABLE title (
     name_en VARCHAR(500),
     duration_mins INTEGER CHECK (duration_mins > 0),
     release_date DATE,
+    poster_url VARCHAR(500),
     age_rating VARCHAR(5) CHECK (
         (t_type = 'M' AND age_rating IN ('G', 'PG', 'PG-13', 'R', 'NC-17', 'NR')) OR
         (t_type = 'S' AND age_rating IN ('TV-Y', 'TV-Y7', 'TV-G', 'TV-PG', 'TV-14', 'TV-MA'))
