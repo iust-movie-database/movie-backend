@@ -1,0 +1,11 @@
+INSERT INTO series (title_id, end_date) VALUES
+(11, '2019-05-19'),   -- Game of Thrones (ended May 19, 2019)
+(12, '2013-09-29'),   -- Breaking Bad (ended September 29, 2013)
+(13, NULL),           -- Stranger Things (ongoing)
+(14, '2023-12-14'),   -- The Crown (ended December 14, 2023)
+(15, '2023-05-28'),   -- Succession (ended May 28, 2023)
+(16, '2020-06-27'),   -- Dark (ended June 27, 2020)
+(17, '2022-08-14'),   -- Westworld (ended August 14, 2022)
+(18, NULL),           -- The Mandalorian (ongoing)
+(19, NULL),           -- House of the Dragon (ongoing)
+(20, NULL);           -- The Last of Us (ongoing)
