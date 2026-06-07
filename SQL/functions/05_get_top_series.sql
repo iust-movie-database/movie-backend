@@ -10,9 +10,9 @@ RETURNS TABLE (
     name_fa VARCHAR,
     name_en VARCHAR,
     poster_url VARCHAR,
-    genres VARCHAR,
-    release_year INT,
-    end_year INT,
+    genres TEXT,
+    release_year NUMERIC,
+    end_year NUMERIC,
     total_episodes INT,
 	is_saved BOOLEAN
 ) AS $$
@@ -33,10 +33,10 @@ BEGIN
         JOIN series s USING(title_id)
         LEFT JOIN has_genre hg USING(title_id)
         LEFT JOIN genre g USING(genre_id)
-        WHERE t.vote_count > 1000 
+        WHERE t.vote_count > 5
           AND t.t_type = 'S'
           AND t.score IS NOT NULL
-        GROUP BY t.title_id
+        GROUP BY t.title_id, end_year, s.total_episodes
         ORDER BY t.score DESC, t.vote_count DESC
         LIMIT p_limit;
 END;

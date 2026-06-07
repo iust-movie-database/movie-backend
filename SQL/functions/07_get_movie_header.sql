@@ -8,7 +8,7 @@ RETURNS TABLE (
     name_en VARCHAR,
     poster_url VARCHAR,
     score DECIMAL,
-    vote_count BIGINT,
+    vote_count INT,
     release_date DATE,
     age_rating VARCHAR,
     duration_mins INT,

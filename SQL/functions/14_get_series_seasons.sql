@@ -3,22 +3,13 @@ RETURNS TABLE (
     season_number INT,
     season_release_date DATE,
     season_end_date DATE,
-    total_episodes INT,
-    episode_number INT,
-    episode_name_fa VARCHAR,
-    episode_name_en VARCHAR,
-    episode_duration INT,
-    episode_release_date DATE,
-    episode_summary TEXT
+    total_episodes INT
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT s.season_number, s.release_date, s.end_date, s.total_episodes,
-           e.episode_number, e.episode_name_fa, e.episode_name_en,
-           e.duration_mins, e.release_date, e.summary
+    SELECT s.season_number, s.release_date, s.end_date, s.total_episodes
     FROM season s
-    LEFT JOIN episode e USING(title_id, season_number)
     WHERE s.title_id = p_title_id
-    ORDER BY s.season_number, e.episode_number;
+    ORDER BY s.season_number;
 END;
 $$ LANGUAGE plpgsql;

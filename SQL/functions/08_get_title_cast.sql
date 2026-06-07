@@ -7,7 +7,7 @@ RETURNS TABLE (
     role_name VARCHAR,
     character_name_fa VARCHAR,
     character_name_en VARCHAR,
-    "order" INT
+    ordering INT
 ) AS $$
 BEGIN
     RETURN QUERY

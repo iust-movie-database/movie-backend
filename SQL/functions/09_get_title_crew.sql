@@ -5,7 +5,7 @@ RETURNS TABLE (
     name_en VARCHAR,
     photo_url VARCHAR,
     role_name VARCHAR,
-    "order" INT
+    ordering INT
 ) AS $$
 BEGIN
     RETURN QUERY

@@ -13,9 +13,7 @@ RETURNS TABLE(
     age_rating VARCHAR,
     summary TEXT,
     t_type CHAR(1),
-    -- Movie fields
     duration_mins INT,
-    -- Series fields
     total_seasons INT,
     total_episodes INT,
     end_year INT,
@@ -28,20 +26,19 @@ BEGIN
            t.score, EXTRACT(YEAR FROM t.release_date)::INT, 
            t.age_rating, t.summary, t.t_type,
            t.duration_mins,
-           s.total_seasons, s.total_episodes, EXTRACT(YEAR FROM s.end_date)::INT
+           s.total_seasons, s.total_episodes, EXTRACT(YEAR FROM s.end_date)::INT,
            CASE WHEN p_user_id IS NOT NULL AND EXISTS(
                 SELECT 1 FROM saved sv
-                WHERE sv.user_is = p_user_id AND
+                WHERE sv.user_id = p_user_id AND
                       sv.title_id = t.title_id
            ) THEN TRUE ELSE FALSE END AS is_saved
-           
     FROM title t
     LEFT JOIN has_genre hg ON t.title_id = hg.title_id
     LEFT JOIN genre g ON hg.genre_id = g.genre_id
     LEFT JOIN series s ON t.title_id = s.title_id
     WHERE t.score IS NOT NULL
-        AND t.vote_count > 1000
-        AND t.release_date >= CURRENT_DATE - INTERVAL '12 months'
+        AND t.vote_count > 5  -- Changed from 1000 to 5
+        -- AND t.release_date >= CURRENT_DATE - INTERVAL '12 months'  -- Comment out for testing
     GROUP BY t.title_id, s.total_seasons, s.total_episodes, s.end_date
     ORDER BY t.score DESC, t.vote_count DESC
     LIMIT p_limit;

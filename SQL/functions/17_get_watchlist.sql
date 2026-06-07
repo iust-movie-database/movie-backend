@@ -12,7 +12,7 @@ RETURNS TABLE (
     name_en VARCHAR,
     poster_url VARCHAR,
     genres TEXT,
-    release_year INT,
+    release_year NUMERIC,
     duration_mins INT,
     total_seasons INT,
     total_episodes INT,
@@ -23,7 +23,7 @@ BEGIN
         SELECT t.title_id, t.t_type, t.age_rating,
                t.name_fa, t.name_en, t.poster_url,
                STRING_AGG(DISTINCT g.name_fa, ', ') AS genres,
-               EXTRACT(YEAR FROM t.release_date)::INT AS release_year,
+               EXTRACT(YEAR FROM t.release_date) AS release_year,
                t.duration_mins,
                s.total_seasons, s.total_episodes,
                sv.status
@@ -34,7 +34,7 @@ BEGIN
         LEFT JOIN genre g USING(genre_id)
         WHERE sv.user_id = p_user_id
           AND (p_status IS NULL OR sv.status = p_status)
-        GROUP BY t.title_id, s.total_seasons, s.total_episodes, sv.status
+        GROUP BY t.title_id, s.total_seasons, s.total_episodes, sv.status, sv.added_date
         ORDER BY sv.added_date DESC
         LIMIT p_limit
         OFFSET p_offset;

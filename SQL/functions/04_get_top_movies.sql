@@ -10,8 +10,8 @@ RETURNS TABLE (
     name_fa VARCHAR,
     name_en VARCHAR,
     poster_url VARCHAR,
-    genres VARCHAR,
-    release_year INT,
+    genres TEXT,
+    release_year NUMERIC,
     duration_mins INT,
     is_saved BOOLEAN
 ) AS $$
@@ -30,7 +30,7 @@ BEGIN
         FROM title t
         LEFT JOIN has_genre hg USING(title_id)
         LEFT JOIN genre g USING(genre_id)
-        WHERE t.vote_count > 1000 
+        WHERE t.vote_count > 5
           AND t.t_type = 'M' 
           AND t.score IS NOT NULL
         GROUP BY t.title_id
