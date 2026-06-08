@@ -1,12 +1,13 @@
 import asyncpg
 from app.config import settings
+from typing import AsyncGenerator
 
 class Database:
     pool: asyncpg.Pool = None
 
 db = Database()
 
-async def connect_db():
+async def connect_db() -> None:
     db.pool = await asyncpg.create_pool(
         host=settings.DB_HOST,
         port=settings.DB_PORT,
@@ -18,11 +19,11 @@ async def connect_db():
     )
     print("✅ Database connected")
 
-async def disconnect_db():
+async def disconnect_db() -> None:
     if db.pool:
         await db.pool.close()
         print("✅ Database disconnected")
 
-async def get_db():
+async def get_db() -> AsyncGenerator:
     async with db.pool.acquire() as conn:
         yield conn
