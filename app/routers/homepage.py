@@ -1,32 +1,25 @@
 import asyncpg
 from typing import Optional
 from app.database import get_db
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from app.schemas import (
     HeroResponse, GenreResponse,
     RecommendationResponse,
     TopMovieResponse, TopSeriesResponse,
-    ComingSoonResponse
+    ComingSoonResponse, UserResponse
 )
-
-router = APIRouter(prefix='/homepage', tags=['homepage'])
-
-
-from fastapi import APIRouter, Depends, HTTPException
-from typing import Optional
-import asyncpg
-from app.database import get_db
-from app.schemas import HeroResponse
+from app.core.deps import get_current_user, get_current_user_optional
 
 router = APIRouter(prefix="/homepage", tags=["Homepage"])
 
 
 @router.get("/hero", response_model=list[HeroResponse])
 async def get_hero(
-    user_id: Optional[int] = None,
     limit: int = 1,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
     rows = await db.fetch(
         "SELECT * FROM get_hero_title($1, $2)", 
         user_id, limit
@@ -47,84 +40,72 @@ async def get_popular_genres(
         limit
     )    
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No genres found"
-        )
+        raise HTTPException(status_code=404, detail="No genres found")
 
     return [GenreResponse(**dict(row)) for row in rows]
 
 
 @router.get("/recommendations", response_model=list[RecommendationResponse])
 async def get_recommendations(
-    user_id: int,
     limit: int = 5,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: UserResponse = Depends(get_current_user)
 ):
     rows = await db.fetch(
         "SELECT * FROM get_recommendations($1, $2)",
-        user_id, limit
+        current_user.user_id, limit
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No recommendations found for this user"
-        )
+        raise HTTPException(status_code=404, detail="No recommendations found for this user")
     
     return [RecommendationResponse(**dict(row)) for row in rows]
 
 
 @router.get("/top-movies", response_model=list[TopMovieResponse])
 async def get_top_movies(
-    user_id: Optional[int] = None,
     limit: int = 5,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
     rows = await db.fetch(
         "SELECT * FROM get_top_movies($1, $2)", 
         user_id, limit
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No movies found"
-        )
+        raise HTTPException(status_code=404, detail="No movies found")
     
     return [TopMovieResponse(**dict(row)) for row in rows]
 
 
 @router.get("/top-series", response_model=list[TopSeriesResponse])
 async def get_top_series(
-    user_id: int = None,
     limit: int = 5,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
     rows = await db.fetch(
         "SELECT * FROM get_top_series($1, $2)",
         user_id, limit
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No top series found"
-        )
+        raise HTTPException(status_code=404, detail="No top series found")
     return [TopSeriesResponse(**dict(row)) for row in rows]
 
 
 @router.get("/coming-soon", response_model=list[ComingSoonResponse])
 async def get_coming_soon(
     limit: int = 5,
-    user_id: Optional[int] = None,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
     rows = await db.fetch(
         "SELECT * FROM get_coming_soon($1, $2)", 
         user_id, limit
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No upcoming titles found"
-        )
+        raise HTTPException(status_code=404, detail="No upcoming titles found")
     
     return [ComingSoonResponse(**dict(row)) for row in rows]

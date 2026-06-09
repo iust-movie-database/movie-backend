@@ -1,18 +1,15 @@
-CREATE OR REPLACE FUNCTION authenticate_user(
-    p_email VARCHAR,
-    p_password_hash VARCHAR
-)
+CREATE OR REPLACE FUNCTION get_user_by_email(p_email VARCHAR)
 RETURNS TABLE (
     user_id BIGINT,
     username VARCHAR,
     email VARCHAR,
-    photo_url VARCHAR,
-    is_admin BOOLEAN
+    password_hash VARCHAR,
+    join_date DATE
 ) AS $$
 BEGIN
     RETURN QUERY
-    SELECT u.user_id, u.username, u.email, u.photo_url, u.is_admin
+    SELECT u.user_id, u.username, u.email, u.password_hash, u.join_date
     FROM users u
-    WHERE u.email = p_email AND u.password_hash = p_password_hash;
+    WHERE u.email = p_email;
 END;
 $$ LANGUAGE plpgsql;

@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from typing import Optional
 from datetime import date
 
@@ -184,3 +184,25 @@ class SearchResultResponse(BaseModel):
     total_episodes: Optional[int] = None
     is_saved: bool = False
     total_count: int
+
+class UserRegister(BaseModel):
+    username: str
+    email: str
+    password: str = Field(..., min_length=8, max_length=72)
+
+class UserLogin(BaseModel):
+    email: str
+    password: str = Field(..., min_length=8, max_length=72)
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str
+    user_id: int
+    username: str
+    email: str
+
+class UserResponse(BaseModel):
+    user_id: int
+    username: str
+    email: str
+    join_date: date

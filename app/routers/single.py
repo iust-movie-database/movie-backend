@@ -6,8 +6,9 @@ from app.schemas import (
     TitleHeaderResponse, CastMemberResponse,
     CrewMemberResponse, AwardResponse,
     ReviewResponse, SimilarTitleResponse,
-    SeasonResponse, EpisodeResponse
+    SeasonResponse, EpisodeResponse, UserResponse
 )
+from app.core.deps import get_current_user_optional
 
 router = APIRouter(prefix="/single", tags=["Single Title"])
 
@@ -15,18 +16,16 @@ router = APIRouter(prefix="/single", tags=["Single Title"])
 @router.get("/{title_id}", response_model=TitleHeaderResponse)
 async def get_title_header(
     title_id: int,
-    user_id: Optional[int] = None,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
     row = await db.fetchrow(
         "SELECT * FROM get_title_header($1, $2)", 
         title_id, user_id
     )
     if not row:
-        raise HTTPException(
-            status_code=404,
-            detail="Title not found"
-        )
+        raise HTTPException(status_code=404, detail="Title not found")
     return TitleHeaderResponse(**dict(row))
 
 
@@ -40,10 +39,7 @@ async def get_title_cast(
         title_id
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No cast found for this title"
-        )
+        raise HTTPException(status_code=404, detail="No cast found for this title")
     return [CastMemberResponse(**dict(row)) for row in rows]
 
 
@@ -57,10 +53,7 @@ async def get_title_crew(
         title_id
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No crew found for this title"
-        )
+        raise HTTPException(status_code=404, detail="No crew found for this title")
     return [CrewMemberResponse(**dict(row)) for row in rows]
 
 
@@ -74,10 +67,7 @@ async def get_title_awards(
         title_id
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No awards found for this title"
-        )
+        raise HTTPException(status_code=404, detail="No awards found for this title")
     return [AwardResponse(**dict(row)) for row in rows]
 
 
@@ -92,10 +82,7 @@ async def get_title_reviews(
         title_id, limit
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No reviews found for this title"
-        )
+        raise HTTPException(status_code=404, detail="No reviews found for this title")
     return [ReviewResponse(**dict(row)) for row in rows]
 
 
@@ -103,18 +90,16 @@ async def get_title_reviews(
 async def get_similar_titles(
     title_id: int,
     limit: int = 10,
-    user_id: Optional[int] = None,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
     rows = await db.fetch(
         "SELECT * FROM get_similar_titles($1, $2, $3)", 
         title_id, user_id, limit
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No similar titles found"
-        )
+        raise HTTPException(status_code=404, detail="No similar titles found")
     return [SimilarTitleResponse(**dict(row)) for row in rows]
 
 
@@ -128,10 +113,7 @@ async def get_series_seasons(
         title_id
     )    
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No seasons found for this series"
-        )
+        raise HTTPException(status_code=404, detail="No seasons found for this series")
     return [SeasonResponse(**dict(row)) for row in rows]
 
 
@@ -145,8 +127,5 @@ async def get_series_episodes(
         title_id
     )
     if not rows:
-        raise HTTPException(
-            status_code=404,
-            detail="No episodes found for this title"
-        )
+        raise HTTPException(status_code=404, detail="No episodes found for this title")
     return [EpisodeResponse(**dict(row)) for row in rows]

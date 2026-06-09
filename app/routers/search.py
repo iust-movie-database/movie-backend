@@ -2,7 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from typing import Optional, List
 import asyncpg
 from app.database import get_db
-from app.schemas import SearchResultResponse
+from app.schemas import SearchResultResponse, UserResponse
+from app.core.deps import get_current_user_optional
 
 router = APIRouter(prefix="/search", tags=["Search"])
 
@@ -18,9 +19,11 @@ async def search_titles(
     sort_by: str = Query("score_desc", description="score_desc, votes_desc, year_desc, year_asc, title_asc, title_desc"),
     limit: int = 20,
     offset: int = 0,
-    user_id: Optional[int] = None,
-    db: asyncpg.Connection = Depends(get_db)
+    db: asyncpg.Connection = Depends(get_db),
+    current_user: Optional[UserResponse] = Depends(get_current_user_optional)
 ):
+    user_id = current_user.user_id if current_user else None
+    
     rows = await db.fetch(
         """
         SELECT * FROM search_titles(
