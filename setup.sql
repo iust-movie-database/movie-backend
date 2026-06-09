@@ -79,7 +79,7 @@ CREATE DATABASE movie;
 \i sql/functions/16_get_watchlist.sql
 \i sql/functions/17_get_user_ratings.sql
 \i sql/functions/18_search_titles.sql
-\i sql/functions/19_authenticate_user.sql
+\i sql/functions/19_get_user_by_email.sql
 
 -- =====================================================
 -- 5. PROCEDURES
