@@ -10,11 +10,11 @@
 
 -- Drop and recreate database
 \echo '0. Creating database...'
-DROP DATABASE IF EXISTS movie_db;
-CREATE DATABASE movie_db;
+DROP DATABASE IF EXISTS movie;
+CREATE DATABASE movie;
 
 -- Connect to the new database
-\c movie_db
+\c movie
 
 -- =====================================================
 -- 1. SCHEMA (Tables)
