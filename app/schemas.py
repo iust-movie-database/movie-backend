@@ -206,3 +206,39 @@ class UserResponse(BaseModel):
     username: str
     email: str
     join_date: date
+
+class ProfileHeaderResponse(BaseModel):
+    username: str
+    join_date: date
+    photo_url: Optional[str] = None
+    email: str
+    total_rated: int
+    total_written: int
+    total_want_to_watch: int
+    total_watching: int
+    total_watched: int
+
+class WatchlistItemResponse(BaseModel):
+    title_id: int
+    t_type: str
+    age_rating: Optional[str] = None
+    name_fa: str
+    name_en: Optional[str] = None
+    poster_url: Optional[str] = None
+    genres: Optional[str] = None
+    release_year: Optional[int] = None
+    duration_mins: Optional[int] = None
+    total_seasons: Optional[int] = None
+    total_episodes: Optional[int] = None
+    status: str
+
+class UserRatingResponse(BaseModel):
+    title_id: int
+    title_name_fa: str
+    title_name_en: Optional[str] = None
+    poster_url: Optional[str] = None
+    rating_score: Optional[int] = None
+    rating_date: Optional[date] = None
+    review_text: Optional[str] = None
+    is_spoiler: bool = False
+    t_type: str
