@@ -166,3 +166,21 @@ class EpisodeResponse(BaseModel):
     episode_duration: Optional[int] = None
     episode_release_date: Optional[date] = None
     episode_summary: Optional[str] = None
+
+
+class SearchResultResponse(BaseModel):
+    title_id: int
+    t_type: str
+    name_fa: str
+    name_en: Optional[str] = None
+    poster_url: Optional[str] = None
+    release_year: Optional[int] = None
+    year_end: Optional[int] = None
+    score: Optional[float] = None
+    vote_count: Optional[int] = None
+    genres: Optional[str] = None
+    duration_mins: Optional[int] = None
+    total_seasons: Optional[int] = None
+    total_episodes: Optional[int] = None
+    is_saved: bool = False
+    total_count: int

@@ -20,7 +20,7 @@ RETURNS TABLE (
     release_year INT,
     year_end INT,
     score DECIMAL,
-    vote_count BIGINT,
+    vote_count INT,
     genres TEXT,
     duration_mins INT,
     total_seasons INT,
@@ -59,7 +59,7 @@ BEGIN
 
     -- Then return the paginated results
     RETURN QUERY
-    SELECT DISTINCT t.title_id, t.t_type, t.name_fa, t.name_en, t.poster_url,
+    SELECT t.title_id, t.t_type, t.name_fa, t.name_en, t.poster_url,
            EXTRACT(YEAR FROM t.release_date)::INT,
            EXTRACT(YEAR FROM s.end_date)::INT,
            t.score, t.vote_count,
