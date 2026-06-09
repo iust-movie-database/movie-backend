@@ -242,3 +242,10 @@ class UserRatingResponse(BaseModel):
     review_text: Optional[str] = None
     is_spoiler: bool = False
     t_type: str
+
+class SaveTitleRequest(BaseModel):
+    status: str  # 'Want to Watch', 'Watching', 'Watched'
+
+class SaveTitleResponse(BaseModel):
+    success: bool
+    message: str
