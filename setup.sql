@@ -67,14 +67,14 @@ CREATE DATABASE movie;
 \i sql/functions/04_get_top_movies.sql
 \i sql/functions/05_get_top_series.sql
 \i sql/functions/06_get_coming_soon.sql
-\i sql/functions/07_get_movie_header.sql
+\i sql/functions/07_get_title_header.sql
 \i sql/functions/08_get_title_cast.sql
 \i sql/functions/09_get_title_crew.sql
 \i sql/functions/10_get_title_awards.sql
 \i sql/functions/11_get_title_reviews.sql
 \i sql/functions/12_get_title_similars.sql
-\i sql/functions/13_get_series_header.sql
-\i sql/functions/14_get_series_seasons.sql
+\i sql/functions/13_get_series_seasons.sql
+\i sql/functions/14_get_series_episodes.sql
 \i sql/functions/15_get_profile_header.sql
 \i sql/functions/16_get_watchlist.sql
 \i sql/functions/17_get_user_ratings.sql
