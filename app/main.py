@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from app.database import connect_db, disconnect_db
 from app.routers import (
     homepage, single, search,
-    auth, user, saved
+    auth, user, saved, reviews
 )
 
 @asynccontextmanager
@@ -20,6 +20,7 @@ app.include_router(search.router)
 app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(saved.router)
+app.include_router(reviews.router)
 
 @app.get("/")
 async def root():

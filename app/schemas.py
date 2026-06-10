@@ -249,3 +249,12 @@ class SaveTitleRequest(BaseModel):
 class SaveTitleResponse(BaseModel):
     success: bool
     message: str
+
+class ReviewRequest(BaseModel):
+    score: int  # 1-10
+    comment: Optional[str] = None
+    is_spoiler: bool = False
+
+class ReviewResponse(BaseModel):
+    success: bool
+    message: str
