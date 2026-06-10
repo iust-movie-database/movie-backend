@@ -255,7 +255,7 @@ class ReviewRequest(BaseModel):
     comment: Optional[str] = None
     is_spoiler: bool = False
 
-class ReviewResponse(BaseModel):
+class CUDReviewResponse(BaseModel):
     success: bool
     message: str
 

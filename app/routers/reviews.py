@@ -1,12 +1,12 @@
 from fastapi import APIRouter, Depends, HTTPException
 import asyncpg
 from app.database import get_db
-from app.schemas import ReviewRequest, ReviewResponse, UserResponse
+from app.schemas import ReviewRequest, CUDReviewResponse, UserResponse
 from app.core.deps import get_current_user
 
 router = APIRouter(prefix="/reviews", tags=["Reviews"])
 
-@router.post("/{title_id}", response_model=ReviewResponse)
+@router.post("/{title_id}", response_model=CUDReviewResponse)
 async def add_or_update_review(
     title_id: int,
     request: ReviewRequest,
@@ -25,7 +25,7 @@ async def add_or_update_review(
             "CALL add_review($1, $2, $3, $4, $5)",
             current_user.user_id, title_id, request.score, request.comment, request.is_spoiler
         )
-        return ReviewResponse(
+        return CUDReviewResponse(
             success=True,
             message="Review saved successfully"
         )
@@ -33,7 +33,7 @@ async def add_or_update_review(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/{title_id}", response_model=ReviewResponse)
+@router.delete("/{title_id}", response_model=CUDReviewResponse)
 async def delete_review(
     title_id: int,
     current_user: UserResponse = Depends(get_current_user),
@@ -56,7 +56,7 @@ async def delete_review(
             "CALL remove_review($1, $2)",
             current_user.user_id, title_id
         )
-        return ReviewResponse(
+        return CUDReviewResponse(
             success=True,
             message="Review deleted successfully"
         )
