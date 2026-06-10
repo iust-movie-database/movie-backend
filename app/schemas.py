@@ -258,3 +258,17 @@ class ReviewRequest(BaseModel):
 class ReviewResponse(BaseModel):
     success: bool
     message: str
+
+class UpdateProfileRequest(BaseModel):
+    username: Optional[str] = None
+    photo_url: Optional[str] = None
+    password: Optional[str] = None
+
+class UpdateProfileResponse(BaseModel):
+    success: bool
+    message: str
+    username: Optional[str] = None
+    photo_url: Optional[str] = None
+
+class DeleteAccountRequest(BaseModel):
+    password: str
