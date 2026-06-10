@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION get_hero_title(
     p_limit BIGINT DEFAULT 1
 )
 RETURNS TABLE(
-    id BIGINT,
+    title_id BIGINT,
     name_fa VARCHAR,
     name_en VARCHAR,
     poster_url VARCHAR,
