@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION get_user_watchlist(
 RETURNS TABLE (
     title_id BIGINT,
     t_type CHAR(1),
+    score DECIMAL,
     age_rating VARCHAR,
     name_fa VARCHAR,
     name_en VARCHAR,
@@ -20,7 +21,7 @@ RETURNS TABLE (
 ) AS $$
 BEGIN
     RETURN QUERY
-        SELECT t.title_id, t.t_type, t.age_rating,
+        SELECT t.title_id, t.t_type, t.score, t.age_rating,
                t.name_fa, t.name_en, t.poster_url,
                STRING_AGG(DISTINCT g.name_fa, ', ') AS genres,
                EXTRACT(YEAR FROM t.release_date) AS release_year,

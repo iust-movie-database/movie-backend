@@ -9,9 +9,9 @@ from app.schemas import (
     UserResponse, DeleteAccountRequest
 )
 
-router = APIRouter(prefix="/users", tags=["users"])
+router = APIRouter(prefix="/profile", tags=["profile"])
 
-@router.put("/profile", response_model=UpdateProfileResponse)
+@router.put("/", response_model=UpdateProfileResponse)
 async def update_user_profile(
     request: UpdateProfileRequest,
     current_user: UserResponse = Depends(get_current_user),
@@ -44,7 +44,7 @@ async def update_user_profile(
         raise HTTPException(status_code=400, detail=str(e))
 
 
-@router.delete("/profile", response_model=UpdateProfileResponse)
+@router.delete("/", response_model=UpdateProfileResponse)
 async def delete_user_profile(
     request: DeleteAccountRequest,
     current_user: UserResponse = Depends(get_current_user),

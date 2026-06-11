@@ -3,7 +3,8 @@ from contextlib import asynccontextmanager
 from app.database import connect_db, disconnect_db, get_db
 from app.routers import (
     homepage, single, search,
-    auth, user, saved, reviews
+    auth, user, saved, reviews,
+    profile
 )
 from fastapi.middleware.cors import CORSMiddleware
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
@@ -79,6 +80,7 @@ app.include_router(auth.router)
 app.include_router(user.router)
 app.include_router(saved.router)
 app.include_router(reviews.router)
+app.include_router(profile.router)
 
 @app.get("/")
 async def root():
