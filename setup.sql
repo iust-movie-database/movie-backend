@@ -80,6 +80,7 @@ CREATE DATABASE movie;
 \i sql/functions/17_get_user_ratings.sql
 \i sql/functions/18_search_titles.sql
 \i sql/functions/19_get_user_by_email.sql
+\i sql/functions/20_calculate_similar_titles.sql
 
 -- =====================================================
 -- 5. PROCEDURES
@@ -92,6 +93,7 @@ CREATE DATABASE movie;
 \i sql/procedures/05_register_user.sql
 \i sql/procedures/07_update_user_profile.sql
 \i sql/procedures/08_remove_user.sql
+\i sql/procedures/09_refresh_similar_titles.sql 
 
 -- =====================================================
 -- 6. SEED DATA
@@ -111,8 +113,8 @@ CREATE DATABASE movie;
 \i sql/seed/12_seed_users.sql
 \i sql/seed/13_seed_reviews.sql
 \i sql/seed/14_seed_saved.sql
-\i sql/seed/15_seed_similar.sql
-\i sql/seed/16_seed_recommended.sql
+\i sql/seed/15_seed_recommended.sql
+CALL refresh_similar_titles();
 
 -- =====================================================
 -- 7. VERIFICATION
