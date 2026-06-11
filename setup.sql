@@ -113,8 +113,8 @@ CREATE DATABASE movie;
 \i sql/seed/12_seed_users.sql
 \i sql/seed/13_seed_reviews.sql
 \i sql/seed/14_seed_saved.sql
-\i sql/seed/15_seed_recommended.sql
 CALL refresh_similar_titles();
+CALL refresh_hybrid_recommendations();
 
 -- =====================================================
 -- 7. VERIFICATION
