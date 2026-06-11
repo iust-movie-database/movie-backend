@@ -13,6 +13,16 @@ from datetime import datetime, timezone
 # Global scheduler instance
 scheduler = AsyncIOScheduler()
 
+async def refresh_recommendations_job():
+    """Daily job to refresh hybrid recommendations for all users"""
+    async for db in get_db():
+        try:
+            await db.execute("CALL refresh_hybrid_recommendations()")
+            print(f"✅ Hybrid recommendations refreshed at {datetime.now()}")
+        except Exception as e:
+            print(f"❌ Failed to refresh recommendations: {e}")
+        break
+
 async def refresh_similar_titles_job():
     """Job to refresh similar titles"""
     async for db in get_db():
@@ -30,10 +40,18 @@ async def lifespan(app: FastAPI):
     # Schedule the job to run daily at 2 AM
     scheduler.add_job(
         refresh_similar_titles_job,
-        trigger=CronTrigger(day_of_week='fri', hour=4, minute=0),
+        trigger=CronTrigger(day_of_week='fri', hour=2, minute=0),
         id="refresh_similar_titles",
         replace_existing=True
     )
+
+    scheduler.add_job(
+        refresh_recommendations_job,
+        trigger=CronTrigger(day_of_week='fri', hour=2, minute=0),
+        id="refresh_recommendations",
+        replace_existing=True
+    )
+
     scheduler.start()
     print("✅ Scheduler started - Similar titles will refresh daily at 2:00 AM")
     
