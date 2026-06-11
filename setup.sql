@@ -36,6 +36,7 @@ CREATE DATABASE movie;
 \i sql/schema/14_recommended.sql
 \i sql/schema/15_review.sql
 \i sql/schema/16_similar_to.sql
+\i sql/schema/17_review_archive.sql
 
 -- =====================================================
 -- 2. INDEXES
@@ -98,6 +99,7 @@ CREATE DATABASE movie;
 \i sql/procedures/08_remove_user.sql
 \i sql/procedures/09_refresh_similar_titles.sql
 \i sql/procedures/10_refresh_hybrid_recommendations.sql
+\i sql/procedures/11_archive_old_reviews.sql
 
 -- =====================================================
 -- 6. SEED DATA
