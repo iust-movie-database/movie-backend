@@ -1,16 +1,44 @@
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
-from app.database import connect_db, disconnect_db
+from app.database import connect_db, disconnect_db, get_db
 from app.routers import (
     homepage, single, search,
     auth, user, saved, reviews
 )
 from fastapi.middleware.cors import CORSMiddleware
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+from apscheduler.triggers.cron import CronTrigger
+from datetime import datetime, timezone
+
+# Global scheduler instance
+scheduler = AsyncIOScheduler()
+
+async def refresh_similar_titles_job():
+    """Job to refresh similar titles"""
+    async for db in get_db():
+        try:
+            await db.execute("CALL refresh_similar_titles()")
+            print(f"✅ Similar titles refreshed at {datetime.now()}")
+        except Exception as e:
+            print(f"❌ Failed to refresh similar titles: {e}")
+        break
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     await connect_db()
+
+    # Schedule the job to run daily at 2 AM
+    scheduler.add_job(
+        refresh_similar_titles_job,
+        trigger=CronTrigger(day_of_week='fri', hour=4, minute=0),
+        id="refresh_similar_titles",
+        replace_existing=True
+    )
+    scheduler.start()
+    print("✅ Scheduler started - Similar titles will refresh daily at 2:00 AM")
+    
     yield
+    scheduler.shutdown()
     await disconnect_db()
 
 app = FastAPI(title="Movie Database API", lifespan=lifespan)
