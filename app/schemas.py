@@ -221,10 +221,10 @@ class ProfileHeaderResponse(BaseModel):
 class WatchlistItemResponse(BaseModel):
     title_id: int
     t_type: str
+    score: Optional[float] = None
     age_rating: Optional[str] = None
     name_fa: str
     name_en: Optional[str] = None
-    score: Optional[float] = None
     poster_url: Optional[str] = None
     genres: Optional[str] = None
     release_year: Optional[int] = None
