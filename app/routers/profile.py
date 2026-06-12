@@ -22,6 +22,9 @@ async def update_user_profile(
         user = await db.fetchrow(
             "SELECT * FROM get_user_by_email($1)", current_user.email
         )
+        if not user:
+            raise HTTPException(status_code=401, detail="user not found")
+        
         user_password_hash = user["password_hash"]
         if not verify_password(request.current_password, user_password_hash):
             raise HTTPException(status_code=401, detail="Invalid email or password")
