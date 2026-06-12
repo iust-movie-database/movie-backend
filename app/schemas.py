@@ -206,6 +206,7 @@ class UserResponse(BaseModel):
     username: str
     email: str
     join_date: date
+    photo_url: Optional[str]
 
 class ProfileHeaderResponse(BaseModel):
     username: str
@@ -261,9 +262,11 @@ class CUDReviewResponse(BaseModel):
     message: str
 
 class UpdateProfileRequest(BaseModel):
+    current_password: str
     username: Optional[str] = None
+    email: Optional[str] = None
     photo_url: Optional[str] = None
-    password: Optional[str] = None
+    new_password: Optional[str] = None
 
 class UpdateProfileResponse(BaseModel):
     success: bool
