@@ -66,13 +66,20 @@ async def delete_user_profile(
     Requires password confirmation.
     """
     try:
-        # Hash the provided password
-        hashed_input = hash_password(request.password)
+        # Get user from database using existing function
+        user = await db.fetchrow(
+            "SELECT * FROM get_user_by_email($1)", current_user.email
+        )
+        if not user:
+            raise HTTPException(status_code=401, detail="user not found")
         
+        user_password_hash = user["password_hash"]
+        if not verify_password(request.password, user_password_hash):
+            raise HTTPException(status_code=401, detail="Invalid email or password")
         # Call procedure that verifies and deletes
         await db.execute(
-            "CALL remove_user_with_verification($1, $2)",
-            current_user.user_id, hashed_input
+            "CALL remove_user($1)",
+            current_user.user_id
         )
         
         return UpdateProfileResponse(
