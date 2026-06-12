@@ -17,7 +17,7 @@ async def update_user_profile(
     current_user: UserResponse = Depends(get_current_user),
     db: asyncpg.Connection = Depends(get_db)
 ):
-    # try:
+    try:
         # Get user from database using existing function
         user = await db.fetchrow(
             "SELECT * FROM get_user_by_email($1)", current_user.email
@@ -49,8 +49,8 @@ async def update_user_profile(
             username=updated_user["username"],
             photo_url=updated_user["photo_url"]
         )
-    # except Exception as e:
-    #     raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
 
 @router.delete("/", response_model=UpdateProfileResponse)
 async def delete_user_profile(
