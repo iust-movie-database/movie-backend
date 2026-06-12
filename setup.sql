@@ -94,12 +94,13 @@ CREATE DATABASE movie;
 \i sql/procedures/02_remove_saved_title.sql
 \i sql/procedures/03_add_review.sql
 \i sql/procedures/04_remove_review.sql
-\i sql/procedures/05_register_user.sql
-\i sql/procedures/07_update_user_profile.sql
-\i sql/procedures/08_remove_user.sql
-\i sql/procedures/09_refresh_similar_titles.sql
-\i sql/procedures/10_refresh_hybrid_recommendations.sql
-\i sql/procedures/11_archive_old_reviews.sql
+\i sql/procedures/05_update_user_profile.sql
+\i sql/procedures/06_remove_user.sql
+\i sql/procedures/07_refresh_similar_titles.sql
+\i sql/procedures/08_refresh_user_recommendations.sql
+\i sql/procedures/09_refresh_hybrid_recommendations.sql
+\i sql/procedures/10_archive_old_reviews.sql
+\i sql/procedures/11_register_user.sql
 
 -- =====================================================
 -- 6. SEED DATA
